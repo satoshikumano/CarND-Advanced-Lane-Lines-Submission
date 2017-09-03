@@ -1,0 +1,148 @@
+# Advanced Lane Finding Project
+
+The goal of this project is finding lane lines from the movie taken by the
+camera equipped to the car.
+
+Applying following steps to achieve the goal.
+
+* Compute the camera calibration matrix and distortion coefficients given a
+set of chessboard images taken by the camera.
+* Apply a distortion correction to raw images.
+* Use color transforms, gradients, etc., to create a thresholded binary image.
+* Apply a perspective transform to rectify binary image ("birds-eye view").
+* Detect lane pixels and fit to find the lane boundary.
+* Determine the curvature of the lane and vehicle position with respect to center.
+* Warp the detected lane boundaries back onto the original image.
+* Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+
+## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
+
+### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+
+---
+
+### Camera Calibration
+
+#### 1. Briefly state how you computed the camera matrix and distortion coefficients.
+
+Use images provided in `camera_cal` directory which are taken by same camera
+equipped to the car.
+9 x 6 chessboard corners are taken in images.
+
+- Prepare object points which represents the coordinates of chessboard corners
+without distortion. (0,0,0), (1,0,0), (2,0,0) ....,(8,5,0)
+- Use cv2.findChessboardCorners to detect coordinates of chessboard corners in
+given images.
+    - If 9 x 6 corners are detected, push it to the `imgpoints` array.
+    - For the object points, use same coordinates.
+    - Using multiple images increases the accuracy of undistortion.
+      (Used 19 images since calibration1.jpg doesn't have 9x6 corners.)
+- Call cv2.calibrateCamera with the prepared object points and detected `imgpoints`.
+- Test undistortion with the one image in `camera_cal` folder.
+
+![Result](./output_images/undistortion.png)
+
+
+### Pipeline (single images)
+
+#### 1. Provide an example of a distortion-corrected image.
+
+Applied distortion correction to [straight_lines1.jpg](./test_images/straight_lines1.jpg).
+
+Used camera matrix and distortion coefficients calculated with the
+chessboard images.
+
+![Undist-Straight](./output_images/undistortion-straight.png)
+
+#### 2. Describe how (and identify where in your code) you performed a perspective transform.
+
+On [straight_lines1.jpg](./test_images/straight_lines1.jpg), choose 4 points on the lane line as source.
+
+```python
+src_bottom_left = [261.0, 680.0]
+src_upper_left = [588.0, 457.0]
+src_bottom_right = [1034.0, 680.0]
+src_upper_right = [684.0, 457.0]
+```
+
+Destination points are determined as following which makes vertical lines symmetric to the center line on the image.
+
+```python
+dst_bottom_left = [500, 720]
+dst_upper_left = [500,0]
+dst_bottom_right = [780, 720]
+dst_upper_right = [780, 0]
+```
+
+Use `cv2.getPerspectiveTransform` to calculate the transformation matrix.
+
+Result of transformation applied to [straight_lines1.jpg](./test_images/straight_lines1.jpg).
+
+![Warped](./output_images/perspective_transform.png)
+
+The code can be found in [AdvancedLaneFinding.ipynb](./AdvancedLaneFinding.ipynb) section `Test perspective transform`.
+
+#### 3. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.
+
+- Applied sobel x with threshhold (130, 255)
+- Applied HSL saturation filtering with threshhold (100, 245)
+- Additionaly, Applied RGB filtering each color is less than 50 to drop dark color which has high saturation.
+
+Here's the results on test images.
+
+![Binary](./output_images/binary_thresh.png)
+
+The code can be found in [AdvancedLaneFinding.ipynb](./AdvancedLaneFinding.ipynb) section `Create thresholded binary image.`.
+
+#### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+
+Used peaks in histogram along the x axis to identify the start point of the line in the frame.
+After identified peak in the left and right,
+Used sliding window search and find a center of the line in the window by taking the mean of x coordinats of non-zero points.
+
+Used `np.polyfit` to fit the identified line coordinate with a polynomial.
+
+The code can be found in [AdvancedLaneFinding.ipynb](./AdvancedLaneFinding.ipynb) section `Find lane lines`.
+
+#### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
+
+Used meter per pixel value given in the lecture and applied for radious calcuration with the polynomial fit calculated in the last section.
+
+```python
+ym_per_pix = 30/720 # meters per pixel in y dimension
+xm_per_pix = 3.7/700 # meters per pixel in x dimension
+```
+
+As for the vehicle position, calculate the difference of the image center and line center.
+
+The code can be found in [AdvancedLaneFinding.ipynb](./AdvancedLaneFinding.ipynb) Line class.
+
+#### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+
+![Line detection](./output_images/line_detection.png)
+
+---
+
+### Pipeline (video)
+
+#### 1. Provide a link to your final video output.
+
+Here's a [link to my video result](./output_images/output.mp4)
+
+---
+
+### Discussion
+
+#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.
+
+Where will your pipeline likely fail?
+
+- Frame which line detection doesn't works well with the color conversion/ histgram search. (Dark image/ Another Car is running in front of the camera.)
+
+- The road is not horizontal.
+
+What could you do to make it more robust?
+
+- Evaluate the detected line and only use `reliable` detection.
+- If the detection is not `reliable`, use previous `reliable` result.
+- Use censor data to calcualte the angle of the car.
