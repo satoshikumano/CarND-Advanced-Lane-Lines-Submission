@@ -7,3 +7,8 @@ output_images/undist_straight_lines1.jpg filter=lfs diff=lfs merge=lfs -text
 output_images/undistortion-straight.png filter=lfs diff=lfs merge=lfs -text
 output_images/undistortion.png filter=lfs diff=lfs merge=lfs -text
 AdvancedLaneFinding.ipynb filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+challenge_video.mp4 filter=lfs diff=lfs merge=lfs -text
+harder_challenge_video.mp4 filter=lfs diff=lfs merge=lfs -text
+project_video.mp4 filter=lfs diff=lfs merge=lfs -text
