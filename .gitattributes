@@ -6,3 +6,4 @@ output_images/save_output_here.txt filter=lfs diff=lfs merge=lfs -text
 output_images/undist_straight_lines1.jpg filter=lfs diff=lfs merge=lfs -text
 output_images/undistortion-straight.png filter=lfs diff=lfs merge=lfs -text
 output_images/undistortion.png filter=lfs diff=lfs merge=lfs -text
+AdvancedLaneFinding.ipynb filter=lfs diff=lfs merge=lfs -text
