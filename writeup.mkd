@@ -119,6 +119,8 @@ The code can be found in [AdvancedLaneFinding.ipynb](./AdvancedLaneFinding.ipynb
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
+In the left upper corner of images, calculated radius and position from center is descrived in red (left lane radius in meter), blue(right lane radius in meter ) and white (offset from the center in meter).
+
 ![Line detection](./output_images/line_detection.png)
 
 ---
