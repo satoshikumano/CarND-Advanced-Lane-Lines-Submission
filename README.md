@@ -3,5 +3,6 @@
 
 
 - Jupyter notebook : [AdvancedLaneFinding.ipynb](./AdvancedLaneFinding.ipynb)
+- Jupyter notebook (html) : [AdvancedLaneFinding.html](./AdvancedLaneFinding.html)
 - Write-up: [writeup.mkd](./writeup.mkd)
 - Output video: [output.mp4](./output_images/output.mp4)
